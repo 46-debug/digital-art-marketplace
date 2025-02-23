@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+US+Modern:wght@100..400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Philosopher:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,5 +20,106 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Poppins", Arial, Helvetica, sans-serif;
+}
+
+.images {
+  width: 170px;
+  height: auto;
+  flex-shrink: 0;
+  padding: 7px;
+  background: lightgray 50% / cover no-repeat, #FFF;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
+  object-fit: cover;
+}
+
+.scroll-container{
+  width: 100%;
+  max-width: 100vw;
+  overflow: hidden;
+  background: white;
+}
+
+#img_main{
+  animation: scroll 25s linear infinite;
+  width: calc(170px * 14);
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-1000px); /* Move based on image widths */
+  }
+}
+
+#paragraph {
+  font-family: "Playwrite US Modern";
+  color: #1e1e1e;
+}
+
+#para{
+  font-family: "Playwrite US Modern";
+  color: #747474;
+}
+
+#btns {
+  font-family: "Playwrite US Modern";
+  color: #1e1e1e;
+}
+
+/* #logo{
+  width: 70vw;
+  height: 30vw;
+  stroke-dasharray: 3011;
+  stroke-dashoffset: 3000;
+} */
+
+.items:hover{
+  background-color: rgba(255, 255, 255, 0.658);
+}
+
+#h3{
+  font-family: "Playwrite US Modern";
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+#paragraph{
+  font-size: clamp(.7rem, 2.5vw, 1rem);
+  text-align: center;
+}
+
+#aero{
+  stroke-dasharray: 450;
+  stroke-dashoffset: 450;
+}
+
+#logo{
+  width: 40vw;
+  min-width: 350px;
+  margin-top: 20px;
+}
+
+#logo path{
+  stroke-dasharray: 450;
+  stroke-dashoffset: 0;
+  animation: 3s fillsvg linear;
+}
+
+@keyframes fillsvg {
+  0%{
+    stroke-dashoffset: 450;
+  }
+  100%{
+    stroke-dashoffset: 0;
+  }
+}
+
+.text{
+  display: inline-block;
+}
+
+#login{
+  background: linear-gradient(76deg, #96000E 0%, #FD7A70 31.5%, #F9B2B9 51%, #D00700 69.5%, #FE412E 100%);
 }
