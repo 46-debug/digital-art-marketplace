@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import axios from 'axios';
+import { useUser } from "@clerk/nextjs";
 
 const FormPage = () => {
     // For ui
@@ -40,8 +41,17 @@ const FormPage = () => {
             } else {
                 setJpeg("Please select (jpeg, jpg) file only");
             }
+            console.log();
         }
     };
+
+    const { user, isLoading } = useUser();
+
+    if (isLoading) return <p>Loading...</p>;
+
+    const userId = user?.id;
+    const userImage = user?.imageUrl;
+    const userName = user?.fullName;
 
     const onImageUpload = async (e) => {
         e.preventDefault();
@@ -49,12 +59,17 @@ const FormPage = () => {
         if (!image) return alert("Please select an image");
         setShowUploading("block");
 
+        if (!userId) return alert("userId is not defined")
+
         try {
             const formData = new FormData();
             formData.append("image", file);
             formData.append("description", description);
             formData.append("hashtags", hashtags);
             formData.append("amount", amount);
+            formData.append("userId", userId || "123");
+            formData.append("userImage", userImage || "url");
+            formData.append("userName", userName || "sumit");
 
             // Upload image with progress tracking
             const uploadPromise = axios.post("/api/uploadImage", formData, {
@@ -88,10 +103,10 @@ const FormPage = () => {
             <div className={`absolute ${success} z-10 top-0 bg-white h-full w-full flex flex-col items-center justify-center`}>
                 <p className='mb-20'>Image Uploaded successfully <span className='text-2xl'>🎉</span></p>
                 <h1 className='text-2xl/4 text-center text-gray-700'>Congratulations
-                    <span className='text-[#408052] text-3xl'> Sumit,</span> <br /> <br /> Welcome to the team.
+                    <span className='text-[#408052] text-3xl'> {user?.firstName},</span> <br /> <br /> Welcome to the team.
                 </h1>
                 <div className='flex gap-5 mt-20 items-center'>
-                    <Link href="/user_profile">
+                    <Link href={`/user_profile/${userId}`}>
                         <button className='p-1.5 pl-3 hover:border-blue-500 border rounded-full flex items-center gap-2'>Visit profile
                             <img className='p-1.5 h-8 bg-blue-600 rounded-full' src="/Assets/aero.svg" alt="" />
                         </button>

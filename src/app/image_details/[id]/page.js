@@ -48,10 +48,10 @@ const Deatils = ({ params }) => {
                     <Link href="/market">
                         <img src="/Assets/back.svg" alt="back icon" />
                     </Link>
-                    <Link href="/user_profile">
+                    <Link href={`/user_profile/${image.userId}`}>
                         <span className="py-2 flex items-center text-sm sm:text-md gap-2 cursor-pointer">
-                            <img className="w-8 h-8 rounded-full" src="/Assets/one.jpg" alt="prifile picture" />
-                            <h5 className="">sumit singh</h5>
+                            <img className="w-8 h-8 rounded-full" src={image.userImage} alt="prifile picture" />
+                            <h5 className="">{image.userName}</h5>
                         </span>
                     </Link>
                 </span>

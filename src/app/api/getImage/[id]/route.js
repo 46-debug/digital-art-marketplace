@@ -15,7 +15,7 @@ export async function GET(req, { params }) {
 
         const image = await ImageForm.findById(id);
         if (!image) {
-            return NextResponse.json({ success: false, message: "Image not found" }, { status: 404 });
+            return NextResponse.json({ success: false, message: "Image or user not found" }, { status: 404 });
         }
 
         return NextResponse.json({ success: true, image }, { status: 200 });

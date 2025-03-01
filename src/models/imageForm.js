@@ -20,6 +20,18 @@ const ImageFormSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  userId: {
+    type: String,
+    required: true,
+  },
+  userImage: {
+    type: String,
+    required: true,
+  },
+  userName: {
+    type: String,
+    required: true,
+  },
 }, { timestamps: true });
 
 const ImageForm = mongoose.models.image || mongoose.model("image", ImageFormSchema);

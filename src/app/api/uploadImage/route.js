@@ -44,6 +44,10 @@ export const POST = async (req) => {
         const description = formData.get("description") || "";
         const hashtags = formData.get("hashtags") || "[]";
         const amount = Number(formData.get("amount")) || 0;
+        const userId = formData.get("userId") || "";
+        const userImage = formData.get("userImage") || "";
+        const userName = formData.get("userName") || "";
+
 
         // ✅ Save to MongoDB
         const newImageForm = new ImageForm({
@@ -52,6 +56,9 @@ export const POST = async (req) => {
             description,
             hashtags,
             amount,
+            userId,
+            userImage,
+            userName,
         });
 
         await newImageForm.save();
