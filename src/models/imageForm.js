@@ -14,7 +14,6 @@ const ImageFormSchema = new mongoose.Schema({
   },
   hashtags: {
     type: [String],
-    default: [],
   },
   amount: {
     type: Number,
@@ -31,6 +30,16 @@ const ImageFormSchema = new mongoose.Schema({
   userName: {
     type: String,
     required: true,
+  },
+  likedBy: {
+    type: [String],
+  },
+  likes: {
+    type: Number,
+    default: 0,
+  },
+  savedBy: {
+    type: [String],
   },
 }, { timestamps: true });
 

@@ -1,8 +1,8 @@
 "use client"
-import Header from "../Components/Header";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useUser } from "@clerk/nextjs";
 
 const HomePage = () => {
 
@@ -28,6 +28,67 @@ const HomePage = () => {
     fetchImage();
   }, []);
 
+  const { user } = useUser();
+  const userId = user?.id;
+
+  // ----------------- like function ---------------
+  const handleLike = async (image) => {
+    if (!user) {
+      alert("Please log in to like images.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/updateImage/likeImage", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: image._id, userId }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to update likes");
+      }
+
+      const updatedImage = await res.json();
+      // Update UI state with new likes and likedBy list
+      setImages((prevImages) =>
+        prevImages.map((img) => (img._id === updatedImage._id ? updatedImage : img))
+      );
+    } catch (error) {
+      console.error("Error updating like:", error);
+    }
+  };
+  // ---------------------- end -----------------------
+
+  // ----------------- save function ---------------
+  const handleSave = async (image) => {
+    if (!user) {
+      alert("Please log in to save images.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/updateImage/saveImage", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: image._id, userId }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to update save");
+      }
+
+      const updatedImage = await res.json();
+      // Update UI state with new save and savedBy list
+      setImages((prevImages) =>
+        prevImages.map((img) => (img._id === updatedImage._id ? updatedImage : img))
+      );
+    } catch (error) {
+      console.error("Error updating save:", error);
+    }
+  };
+  // ---------------------- end -----------------------
+
   const filtered = images
     ? images.filter((img) =>
       img[filter]?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -42,10 +103,8 @@ const HomePage = () => {
     };
   }, [filtered]);
 
-
   return (
     <div className="flex flex-col items-center">
-      <Header />
 
       {/* ------------------- search ----------------------- */}
       <div className="w-full flex flex-col items-center gap-7">
@@ -58,7 +117,7 @@ const HomePage = () => {
             <div className='text-sm'>
               <select className='outline-none bg-transparent' onChange={(e) => setFilter(e.target.value)}>
                 <option value="description">Images</option>
-                <option value="username">Artist</option>
+                <option value="userName">Artist</option>
               </select>
             </div>
 
@@ -110,7 +169,7 @@ const HomePage = () => {
       </p>
 
       {/* --------------------------- Art Gallery -------------------------- */}
-      <section className="py-5 px-2 sm:px-8">
+      {filter === "description" && <section className="py-5 px-2 sm:px-8">
         <h2 className="text-2xl text-gray-700 sm:mb-10">
           {`${filtered.length === 0 ? "" : "Featured Artwork"}`}
         </h2>
@@ -126,9 +185,9 @@ const HomePage = () => {
           {filtered.map((image) => (
 
             <div className="group sm:hover:shadow-lg relative rounded-xl mb-5 overflow-hidden w-full transition-all cursor-zoom-in">
-              <Link 
-              className="sm:hidden flex sm:group-hover:flex sm:absolute sm:text-white px-2 items-center w-full gap-2 cursor-pointer sm:bg-[linear-gradient(180deg,_rgba(50,_50,_50,_0.50)_0%,_rgba(128,_128,_128,_0.00)_100%)]" 
-              href={`/user_profile/${image.userId}`}>
+              <Link
+                className="sm:hidden flex sm:group-hover:flex sm:absolute sm:text-white px-2 items-center w-full gap-2 cursor-pointer sm:bg-[linear-gradient(180deg,_rgba(50,_50,_50,_0.50)_0%,_rgba(128,_128,_128,_0.00)_100%)]"
+                href={`/user_profile/${image.userId}`}>
                 <img className="w-7 my-2 rounded-lg" src={image.userImage} alt="user image" />
                 <h5>{image.userName}</h5>
               </Link>
@@ -144,15 +203,16 @@ const HomePage = () => {
               <div className="sm:hidden flex sm:group-hover:flex items-center justify-between p-2 sm:absolute sm:text-white w-full bottom-0 sm:bg-[linear-gradient(180deg,_rgba(128,_128,_128,_0.00)_0%,_rgba(50,_50,_50,_0.50)_100%)]">
 
                 <div className="flex gap-2">
-                  <button className="w-11 h-9 flex items-center justify-center border rounded-lg">
-                    <svg className="sm:hover:fill-[#ffff]" width="23" height="23" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path className="sm:stroke-white stroke-black" d="M12.7014 6.79442L12.4481 8H13.68H20C20.2652 8 20.5196 8.10536 20.7071 8.29289C20.8946 8.48043 21 8.73478 21 9V11C21 11.1217 20.9784 11.2348 20.9336 11.353L17.9208 18.3862L17.9207 18.3862L17.9169 18.3954C17.7688 18.7508 17.4177 19 17 19H8C7.73478 19 7.48043 18.8946 7.29289 18.7071C7.10536 18.5196 7 18.2652 7 18V8C7 7.72455 7.10794 7.47628 7.29711 7.28711L13.1733 1.41087L13.5229 1.75711C13.5233 1.75751 13.5237 1.75792 13.5241 1.75833C13.6141 1.84896 13.67 1.97724 13.67 2.11C13.67 2.16039 13.6654 2.20275 13.66 2.23069L12.7014 6.79442ZM3 9V19H1V9H3Z"
-                        stroke="#ffff" stroke-width="2" />
+                  <button value="like" onClick={() => handleLike(image)} className={`${image.likedBy.includes(user?.id) ? "bg-red-500 border-red-500" : "bg-transparent"} w-11 h-9 flex items-center justify-center border rounded-lg`}>
+                    <svg className={`${image.likedBy.includes(user?.id) ? "fill-white" : "fill-transparent"} hover:fill-[#ffff]`} width="23" height="23" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path className={`${image.likedBy.includes(user?.id) ? "stroke-white" : ""} sm:stroke-white stroke-black`} d="M12.7014 6.79442L12.4481 8H13.68H20C20.2652 8 20.5196 8.10536 20.7071 8.29289C20.8946 8.48043 21 8.73478 21 9V11C21 11.1217 20.9784 11.2348 20.9336 11.353L17.9208 18.3862L17.9207 18.3862L17.9169 18.3954C17.7688 18.7508 17.4177 19 17 19H8C7.73478 19 7.48043 18.8946 7.29289 18.7071C7.10536 18.5196 7 18.2652 7 18V8C7 7.72455 7.10794 7.47628 7.29711 7.28711L13.1733 1.41087L13.5229 1.75711C13.5233 1.75751 13.5237 1.75792 13.5241 1.75833C13.6141 1.84896 13.67 1.97724 13.67 2.11C13.67 2.16039 13.6654 2.20275 13.66 2.23069L12.7014 6.79442ZM3 9V19H1V9H3Z"
+                        stroke="black" stroke-width="2" />
                     </svg>
                   </button>
-                  <button className="w-11 h-9 flex items-center justify-center border rounded-lg">
-                    <svg className="hover:fill-[#ffff]" width="20" height="20" viewBox="0 0 14 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path className="sm:stroke-white stroke-black" d="M1 3.73263C1 2.77621 1 2.298 1.218 1.93251C1.40974 1.61116 1.71569 1.3499 2.092 1.18616C2.52 1 3.08 1 4.2 1H9.8C10.92 1 11.48 1 11.908 1.18616C12.2843 1.3499 12.5903 1.61116 12.782 1.93251C13 2.298 13 2.77621 13 3.73263V15.0944C13 15.5094 13 15.7169 12.899 15.8305C12.8554 15.8799 12.7997 15.9206 12.7358 15.9498C12.6719 15.979 12.6013 15.996 12.529 15.9996C12.362 16.0081 12.16 15.8928 11.756 15.6631L7 12.9552L2.244 15.6622C1.84 15.8928 1.638 16.0081 1.47 15.9996C1.39784 15.9958 1.32748 15.9788 1.26377 15.9496C1.20007 15.9204 1.14453 15.8798 1.101 15.8305C1 15.7169 1 15.5094 1 15.0944V3.73263Z"
+
+                  <button value="save" onClick={() => handleSave(image)} className={`${image.savedBy.includes(user?.id) ? "bg-green-500 border-green-500" : "bg-transparent"} w-11 h-9 flex items-center justify-center border rounded-lg`}>
+                    <svg className={`${image.savedBy.includes(user?.id) ? "fill-white" : "fill-transparent"} hover:fill-[#ffff]`} width="20" height="20" viewBox="0 0 14 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path className={`${image.savedBy.includes(user?.id) ? "stroke-white" : ""} sm:stroke-white stroke-black`} d="M1 3.73263C1 2.77621 1 2.298 1.218 1.93251C1.40974 1.61116 1.71569 1.3499 2.092 1.18616C2.52 1 3.08 1 4.2 1H9.8C10.92 1 11.48 1 11.908 1.18616C12.2843 1.3499 12.5903 1.61116 12.782 1.93251C13 2.298 13 2.77621 13 3.73263V15.0944C13 15.5094 13 15.7169 12.899 15.8305C12.8554 15.8799 12.7997 15.9206 12.7358 15.9498C12.6719 15.979 12.6013 15.996 12.529 15.9996C12.362 16.0081 12.16 15.8928 11.756 15.6631L7 12.9552L2.244 15.6622C1.84 15.8928 1.638 16.0081 1.47 15.9996C1.39784 15.9958 1.32748 15.9788 1.26377 15.9496C1.20007 15.9204 1.14453 15.8798 1.101 15.8305C1 15.7169 1 15.5094 1 15.0944V3.73263Z"
                         stroke="#ffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                   </button>
@@ -163,32 +223,32 @@ const HomePage = () => {
             </div>
           ))}
         </div>
-      </section>
+      </section>}
       {/* --------------------------------- End --------------------------------- */}
 
 
       {/* ------------------------ User Profiles --------------------------*/}
-      {/* <div className="w-full px-2 sm:px-8 flex flex-col gap-5">
+      {filter === "userName" && <div className="w-full px-2 sm:px-8 flex flex-col gap-5">
         {filtered.map((image) => (
           <div className="flex gap-2 flex-col">
-            <Link className="flex gap-2" href={`/user_profile/${image.username}`} key={image.username}>
+            <Link className="flex gap-2 items-center" href={`/user_profile/${image.userId}`} key={image.userId}>
               <span>
-                <img src="" alt="user profile" />
+                <img className="w-20 rounded-xl" src={image.userImage} alt="user profile" />
               </span>
               <div>
-                <p>{image.username}</p>
-                <p>{image.email}</p>
+                <p>{image.userName}</p>
+                <p>{image.userId}</p>
               </div>
             </Link>
 
             <div className="w-full overflow-x-auto">
               <Link href={`/image_details/${image._id}`}>
-                <img src={image.imageUrl} alt="imeges" />
+                <img className="rounded-xl h-40" src={image.imageUrl} alt="imeges" />
               </Link>
             </div>
           </div>
         ))}
-      </div> */}
+      </div>}
       {/* ---------------------------- End ------------------------- */}
 
     </div>

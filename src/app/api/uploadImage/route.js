@@ -42,12 +42,14 @@ export const POST = async (req) => {
 
         // ✅ Extract other form fields
         const description = formData.get("description") || "";
-        const hashtags = formData.get("hashtags") || "[]";
+        const hashtags = formData.get("hashtags")?.split(",") || "";
         const amount = Number(formData.get("amount")) || 0;
         const userId = formData.get("userId") || "";
         const userImage = formData.get("userImage") || "";
         const userName = formData.get("userName") || "";
-
+        const likedBy = formData.get("likedBy") || "";
+        const likes = Number(formData.get("likes")) || 0;
+        const savedBy = formData.get("savedBy") || "";
 
         // ✅ Save to MongoDB
         const newImageForm = new ImageForm({
@@ -59,6 +61,9 @@ export const POST = async (req) => {
             userId,
             userImage,
             userName,
+            likedBy,
+            likes,
+            savedBy,
         });
 
         await newImageForm.save();

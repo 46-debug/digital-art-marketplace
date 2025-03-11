@@ -18,6 +18,10 @@ const FormPage = () => {
     const [showUploading, setShowUploading] = useState("hidden");
     const [success, setSuccess] = useState("hidden");
 
+    const savedBy = [];
+    const likes = 0;
+    const likedBy = [];
+
     // hashtags handle
     const handleAddHashtag = () => {
         if (hashtags.length < 5) {
@@ -67,9 +71,12 @@ const FormPage = () => {
             formData.append("description", description);
             formData.append("hashtags", hashtags);
             formData.append("amount", amount);
-            formData.append("userId", userId || "123");
-            formData.append("userImage", userImage || "url");
-            formData.append("userName", userName || "sumit");
+            formData.append("userId", userId);
+            formData.append("userImage", userImage);
+            formData.append("userName", userName);
+            formData.append("likedBy", likedBy);
+            formData.append("likes", likes);
+            formData.append("savedBy", savedBy);
 
             // Upload image with progress tracking
             const uploadPromise = axios.post("/api/uploadImage", formData, {
@@ -90,7 +97,6 @@ const FormPage = () => {
             console.error("Upload error:", error);
         }
     };
-
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100 sm:bg-white py-2">
 

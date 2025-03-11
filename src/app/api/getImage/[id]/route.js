@@ -7,7 +7,7 @@ export async function GET(req, { params }) {
     try {
         await dbConnection(); // Ensure DB connection is established
 
-        const { id } = params;
+        const { id } = await params;
 
         if (!ObjectId.isValid(id)) {
             return NextResponse.json({ success: false, message: "Invalid ID" }, { status: 400 });
@@ -24,3 +24,4 @@ export async function GET(req, { params }) {
         return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 });
     }
 }
+
