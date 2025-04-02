@@ -11,17 +11,23 @@ const HomePage = () => {
   const [filter, setFilter] = useState("description");
   const [searchQuery, setSearchQuery] = useState("");
   const [massage, setMassage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     const fetchImage = async () => {
       try {
         const response = await fetch(`/api/getImage`);
-        if (!response.ok) throw new Error("Failed to fetch image");
+        if (!response.ok) {
+          throw new Error("Failed to fetch image")
+        }
 
         const data = await response.json();
         setImages(data.images);
       } catch (error) {
         console.error("Error fetching image:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -97,7 +103,7 @@ const HomePage = () => {
 
   useEffect(() => {
     if (filter === "description") {
-      setMassage(filtered.length === 0 ? "No images found" : "")
+      setMassage(filtered.length === 0 ? `No image found of ${searchQuery}` : "")
     } else {
       setMassage(filtered.length === 0 ? "No artist found" : "")
     };
@@ -112,14 +118,14 @@ const HomePage = () => {
          bg-white hover:border-2 sm:w-3/5 hover:border-[#408052]'>
           <input className='border-none text-sm w-[45vw] outline-none' value={searchQuery}
             onChange={(e) => { setSearchQuery(e.target.value) }}
-            type="text" placeholder='Search images or artist' />
+            type="text" placeholder='Search images' />
           <div className='flex items-center gap-2'>
-            <div className='text-sm'>
+            {/* <div className='text-sm'>
               <select className='outline-none bg-transparent' onChange={(e) => setFilter(e.target.value)}>
                 <option value="description">Images</option>
                 <option value="userName">Artist</option>
               </select>
-            </div>
+            </div> */}
 
             <span className='bg-[#408052] p-2.5 rounded-full'>
               <img src="/Assets/Vector.svg" alt="search icon" />
@@ -153,8 +159,8 @@ const HomePage = () => {
             className='py-1 px-2 bg-white hover:bg-green-700 hover:text-white border-gray-300 border rounded-full text-sm'>Garden
           </button>
           <button onClick={(e) => { setSearchQuery(e.target.value) }}
-            value="butterfly"
-            className='py-1 px-2 bg-white hover:bg-green-700 hover:text-white border-gray-300 border rounded-full text-sm'>Butterflys
+            value="butterflies"
+            className='py-1 px-2 bg-white hover:bg-green-700 hover:text-white border-gray-300 border rounded-full text-sm'>Butterflies
           </button>
           <button onClick={(e) => { setSearchQuery(e.target.value) }}
             value="game"
@@ -164,33 +170,43 @@ const HomePage = () => {
       </div>
       {/* --------------------------------------- End ---------------------------- */}
 
-      <p id="para" className="text-md mt-7 text-center mx-2 font-light">
+      {filtered.length !== 0 && <p id="para" className="text-md mt-7 text-center mx-2 font-light">
         Browse through a curated collection of masterpieces.
-      </p>
+      </p>}
 
       {/* --------------------------- Art Gallery -------------------------- */}
       {filter === "description" && <section className="py-5 px-2 sm:px-8">
         <h2 className="text-2xl text-gray-700 sm:mb-10">
-          {`${filtered.length === 0 ? "" : "Featured Artwork"}`}
+          {`${filtered.length === 0 ? "" : "Canvas"}`}
         </h2>
 
-        <span className="w-full sm:hidden flex items-center justify-end px-2 py-3">
-          <img onClick={() => setGrid(grid => grid ? false : true)} className={`${grid ? "bg-black" : "bg-white"} p-2 border rounded-lg `} src="/Assets/grid.svg" alt="" />
-        </span>
+        {loading && <div className="w-full flex justify-center">
+          <h4 className="text-xl text-gray-600 p-2 border-b-2 border-black/50 w-24 text-center">Loading</h4>
+        </div>}
 
-        <p className="text-center text-lg">{massage}</p>
+        {filtered.length !== 0 && <span className="w-full sm:hidden flex items-center justify-end px-2 py-3">
+          <img onClick={() => setGrid(grid => grid ? false : true)} className={`${grid ? "bg-black" : "bg-white"} p-2 border rounded-lg `} src="/Assets/grid.svg" alt="" />
+        </span>}
+
+        {!loading && <p className="text-center text-lg">{massage}</p>}
+
+        {massage !== "" && !loading && (<div className="flex px-4 text-center flex-col items-center justify-center">
+          <p className="my-5 text-gray-500">Upload stunning {searchQuery} images, and watch your earnings soar!
+            The more you <span>upload</span>, the more you <span>sell!</span>"✨</p>
+          <Link className="p-2 rounded-xl bg-[#408052] text-white hover:bg-[#2c663d]" href="/submit_image">Start Uploading</Link>
+        </div>)}
 
         <div className={`${grid ? "columns-2" : "columns-1"} sm:columns-2 md:columns-3 lg:columns-5 gap-4 space-y-4`}>
           {/* Art pieces */}
           {filtered.map((image) => (
 
             <div className="group sm:hover:shadow-lg relative rounded-xl mb-5 overflow-hidden w-full transition-all cursor-zoom-in">
-              <Link
+              {!grid && <Link
                 className="sm:hidden flex sm:group-hover:flex sm:absolute sm:text-white px-2 items-center w-full gap-2 cursor-pointer sm:bg-[linear-gradient(180deg,_rgba(50,_50,_50,_0.50)_0%,_rgba(128,_128,_128,_0.00)_100%)]"
                 href={`/user_profile/${image.userId}`}>
                 <img className="w-7 my-2 rounded-lg" src={image.userImage} alt="user image" />
                 <h5>{image.userName}</h5>
-              </Link>
+              </Link>}
               <Link href={`/image_details/${image._id}`} key={image._id}>
                 <Image
                   src={image.imageUrl}
@@ -200,7 +216,7 @@ const HomePage = () => {
                   className="object-cover rounded-xl w-full sm:w-[300px] h-auto"
                 />
               </Link>
-              <div className="sm:hidden flex sm:group-hover:flex items-center justify-between p-2 sm:absolute sm:text-white w-full bottom-0 sm:bg-[linear-gradient(180deg,_rgba(128,_128,_128,_0.00)_0%,_rgba(50,_50,_50,_0.50)_100%)]">
+              {!grid && <div className="sm:hidden flex sm:group-hover:flex items-center justify-between p-2 sm:absolute sm:text-white w-full bottom-0 sm:bg-[linear-gradient(180deg,_rgba(128,_128,_128,_0.00)_0%,_rgba(50,_50,_50,_0.50)_100%)]">
 
                 <div className="flex gap-2">
                   <button value="like" onClick={() => handleLike(image)} className={`${image.likedBy.includes(user?.id) ? "bg-red-500 border-red-500" : "bg-transparent"} w-11 h-9 flex items-center justify-center border rounded-lg`}>
@@ -219,7 +235,7 @@ const HomePage = () => {
                 </div>
 
                 <p className="text-2xl">₹ {image.amount}</p>
-              </div>
+              </div>}
             </div>
           ))}
         </div>
@@ -228,7 +244,7 @@ const HomePage = () => {
 
 
       {/* ------------------------ User Profiles --------------------------*/}
-      {filter === "userName" && <div className="w-full px-2 sm:px-8 flex flex-col gap-5">
+      {/* {filter === "userName" && <div className="w-full px-2 sm:px-8 flex flex-col gap-5">
         {filtered.map((image) => (
           <div className="flex gap-2 flex-col">
             <Link className="flex gap-2 items-center" href={`/user_profile/${image.userId}`} key={image.userId}>
@@ -248,7 +264,7 @@ const HomePage = () => {
             </div>
           </div>
         ))}
-      </div>}
+      </div>} */}
       {/* ---------------------------- End ------------------------- */}
 
     </div>

@@ -40,21 +40,23 @@ export const POST = async (req) => {
             ).end(buffer);
         });
 
-        // ✅ Extract other form fields
-        const description = formData.get("description") || "";
-        const hashtags = formData.get("hashtags")?.split(",") || "";
-        const amount = Number(formData.get("amount")) || 0;
+        //  Extract other form fields
+        const description = formData.get("description");
+        const hashtags = formData.get("hashtags")?.split(",");
+        const amount = Number(formData.get("amount"));
         const userId = formData.get("userId") || "";
-        const userImage = formData.get("userImage") || "";
-        const userName = formData.get("userName") || "";
-        const likedBy = formData.get("likedBy") || "";
-        const likes = Number(formData.get("likes")) || 0;
-        const savedBy = formData.get("savedBy") || "";
+        const userImage = formData.get("userImage");
+        const userName = formData.get("userName");
+        const likedBy = formData.get("likedBy");
+        const likes = Number(formData.get("likes"));
+        const savedBy = formData.get("savedBy");
+        const downloads = formData.get("downloads");
+        const downloadBy = formData.get("downloadBy");
 
-        // ✅ Save to MongoDB
+        //  Save to MongoDB
         const newImageForm = new ImageForm({
-            imageUrl: uploadResult.secure_url, // ✅ Save Cloudinary URL
-            publicId: uploadResult.public_id,  // ✅ Useful for deletions
+            imageUrl: uploadResult.secure_url, //  Save Cloudinary URL
+            publicId: uploadResult.public_id,  //  Useful for deletions
             description,
             hashtags,
             amount,
@@ -64,6 +66,8 @@ export const POST = async (req) => {
             likedBy,
             likes,
             savedBy,
+            downloads,
+            downloadBy,
         });
 
         await newImageForm.save();

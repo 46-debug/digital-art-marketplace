@@ -11,7 +11,7 @@ const SavedImages = () => {
     const [grid, setGrid] = useState(false);
     const [images, setImages] = useState([]);
     const params = useParams();
-    const { userId } = params; // Get the ID from the dynamic route
+    const { userId } = params;
 
     const { user } = useUser();
 

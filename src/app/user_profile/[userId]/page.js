@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { useUser } from "@clerk/nextjs";
 import Image from 'next/image';
 import { SignOutButton } from "@clerk/nextjs";
+import { useParams } from 'next/navigation';
 
-const UserProfile = ({ params }) => {
+const UserProfile = () => {
 
     const [client, setClient] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -13,7 +14,8 @@ const UserProfile = ({ params }) => {
     const [len, setLen] = useState(0);
     const [images, setImages] = useState([]);
 
-    const { userId } = params; // Get the ID from the dynamic route
+    const { userId } = useParams();
+
     useEffect(() => {
         if (!userId) return;
         const fetchUser = async () => {
@@ -43,36 +45,47 @@ const UserProfile = ({ params }) => {
 
     if (!client) return <p >User not found. {userId}</p>;
 
+
     return (
-        <div className='flex flex-col items-center bg-gray-50 min-h-screen'>
-        
+        <div className='flex flex-col items-center'>
+
             <div className='flex flex-wrap items-center justify-start gap-5 w-full p-5 px-2 sm:px-8'>
-                <img className='w-32 h-32 rounded-[25px]' src={`${len === 0 ? user.imageUrl : client.userImage}`} alt="profile picture" />
-                <h1 className='font-semibold text-2xl'>{`${len === 0 ? user.fullName : client.userName}`}</h1>
+                <img className='w-32 h-32 rounded-[25px]' src={`${len === 0 ? user?.imageUrl : client.userImage}`} alt="profile picture" />
+                <h1 className='font-semibold text-2xl'>{`${len === 0 ? user?.fullName : client.userName}`}</h1>
             </div>
 
-            <div>
+            <div className='w-full'>
                 <div className='flex justify-between w-full px-2 sm:px-8'>
                     <span className='px-2.5 py-2 bg-white border text-sm gap-1.5 items-center flex shadow-sm hover:bg-gray-100 rounded-full cursor-pointer'>
                         <img src="/Assets/photos.svg" alt="photo icon" />
                         Images {len}
                     </span>
 
-                    <SignOutButton>
-                        <button className={`text-center px-3 rounded-xl hover:bg-red-100 text-red-600`}>
-                            Logout
-                        </button>
-                    </SignOutButton>
+                    {user?.id === client.userId &&
+                        <SignOutButton>
+                            <button className="text-center px-3 rounded-xl hover:bg-red-100 text-red-600">
+                                Logout
+                            </button>
+                        </SignOutButton>
+                    }
+
                 </div>
+
+                {len === 0 && <div className='w-full flex gap-2 mt-32 items-center flex-col'>
+                    <h1 className='text-xl'>No Images Uploaded</h1>
+                    <Link href="/submit_image">
+                        <button className='py-2 px-4 bg-blue-600 text-white rounded-lg'>Upload</button>
+                    </Link>
+                </div>}
 
                 <section className="py-5 px-2 sm:px-8">
 
-                    <span className="w-full sm:hidden flex items-center justify-end px-2 py-3">
+                    {len !== 0 && <span className="w-full sm:hidden flex items-center justify-end px-2 py-3">
                         <img onClick={() => setGrid(grid => grid ? false : true)} className={`${grid ? "bg-black" : "bg-white"} p-2 border rounded-lg `} src="/Assets/grid.svg" alt="" />
-                    </span>
+                    </span>}
 
                     <div className={`${grid ? "columns-2" : "columns-1"} sm:columns-2 md:columns-3 lg:columns-5 gap-4 space-y-4`}>
-                        {/* Art pieces */}
+                        
                         {images.map((image) => (
 
                             <div className="group sm:hover:shadow-lg relative rounded-xl mb-5 overflow-hidden w-full transition-all cursor-zoom-in">

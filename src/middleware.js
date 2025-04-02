@@ -1,6 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-const isPrivateRoute = createRouteMatcher(['/submit_image(.*)', '/user_profile(.*)'])
+const isPrivateRoute = createRouteMatcher(['/submit_image(.*)', '/user_profile(.*)', '/saved(.*)'])
 
 export default clerkMiddleware(async (auth, request) => {
     if (isPrivateRoute(request)) {

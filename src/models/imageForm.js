@@ -41,6 +41,13 @@ const ImageFormSchema = new mongoose.Schema({
   savedBy: {
     type: [String],
   },
+  downloadBy: {
+    type: [String],
+  },
+  downloads: {
+    type: Number,
+    default: 0,
+  }
 }, { timestamps: true });
 
 const ImageForm = mongoose.models.image || mongoose.model("image", ImageFormSchema);

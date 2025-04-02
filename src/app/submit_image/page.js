@@ -11,7 +11,7 @@ const FormPage = () => {
     const [currentHashtag, setCurrentHashtag] = useState('');
     const [image, setImage] = useState(null);
     const [file, setFile] = useState(null);
-    const [amount, setAmount] = useState("");
+    const [amount, setAmount] = useState(0);
     const [show, setShow] = useState({ "input": "block", "img": "none" });
     const [jpeg, setJpeg] = useState("");
     const [upload, setUpload] = useState();
@@ -21,6 +21,8 @@ const FormPage = () => {
     const savedBy = [];
     const likes = 0;
     const likedBy = [];
+    const downloads = 0;
+    const downloadBy = 0;
 
     // hashtags handle
     const handleAddHashtag = () => {
@@ -77,6 +79,8 @@ const FormPage = () => {
             formData.append("likedBy", likedBy);
             formData.append("likes", likes);
             formData.append("savedBy", savedBy);
+            formData.append("downloads", downloads);
+            formData.append("downloadBy", downloadBy);
 
             // Upload image with progress tracking
             const uploadPromise = axios.post("/api/uploadImage", formData, {

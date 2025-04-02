@@ -17,6 +17,7 @@ const Details = () => {
     const [confirmDelete, setConfirmDelete] = useState("");
     const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
     const [isUpdateDisabled, setIsUpdateDisabled] = useState(true);
+    const [showMessage, setShowMessage] = useState(false);
 
     const { id } = useParams();
     const { user } = useUser();
@@ -95,7 +96,7 @@ const Details = () => {
     // ---------------------- end --------------------
 
 
-    // ----------------- save function ---------------
+    // ----------------- like function ---------------
     const handleLike = async () => {
         if (!user) {
             alert("Please log in to like images.");
@@ -174,13 +175,55 @@ const Details = () => {
     };
     // ---------------------- end -------------------------
 
+
+    // ----------------- download function ------------------
+    const handleDownload = async () => {
+
+        if (!user) {
+            alert("Please log in to download images.");
+            return;
+        }
+
+        const response = await fetch(image.imageUrl);
+        const blob = await response.blob();
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = (image.userName + "_" + image._id + "_" + "MetaCanvas");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        try {
+            const res = await fetch("/api/updateImage/updateDownload", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: image._id, userId }),
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to update downloads");
+            }
+
+            const updatedImage = await res.json();
+            setImage(updatedImage);
+        } catch (error) {
+            console.error("Error updating downloads:", error);
+        }
+    };
+    // ---------------------- end ------------------------
+
+
+    // ----------------- purchase function ------------------
+    const handlePurchase = () => {
+        setShowMessage(true);
+    };
+    // ---------------------- end ------------------------
+
     return (
         <div className="bg-gray-50 min-h-screen">
             <div className="flex justify-between px-3 items-center">
                 <span className="py-2 flex items-center gap-2">
-                    <Link href="/market">
-                        <img src="/Assets/back.svg" alt="back icon" />
-                    </Link>
+                    <img onClick={() => router.back()} src="/Assets/back.svg" alt="back icon" />
                     <Link href={`/user_profile/${image.userId}`}>
                         <span className="py-2 flex items-center text-sm sm:text-md gap-2 cursor-pointer">
                             <img className="w-8 h-8 rounded-full" src={image.userImage} alt="prifile picture" />
@@ -191,7 +234,7 @@ const Details = () => {
 
                 <div className="flex gap-2">
                     <span className="px-2 py-1.5 bg-gray-200 rounded-md flex items-center font-sm text-gray-500 text-sm">Like: <span className="font-medium text-gray-700 px-1">{image.likes}</span> </span>
-                    <span className="px-2 py-1.5 bg-gray-200 rounded-md flex items-center font-sm text-sm text-gray-500">Download: <span className="font-medium text-gray-700 px-1">44</span> </span>
+                    <span className="px-2 py-1.5 bg-gray-200 rounded-md flex items-center font-sm text-sm text-gray-500">Download: <span className="font-medium text-gray-700 px-1">{image.downloads}</span> </span>
                 </div>
             </div>
 
@@ -228,16 +271,23 @@ const Details = () => {
                 {!show && <div className="flex items-center flex-col
             sm:relative w-full m-2 sm:w-44 cursor-pointer text-white px-2">
 
-                    {image.userId !== user?.id && image.amount !== 0 ? (<button className={`flex items-center justify-center  bg-[#408052]
+                    {image.userId !== user?.id && image.amount !== 0 ? (<button onClick={handlePurchase} className={`flex items-center justify-center  bg-[#408052]
             px-4 py-4 sm:rounded-xl rounded-full sm:relative w-full m-2 sm:w-44 cursor-pointer hover:bg-[#2a5e39]`}>
                         Purchase
                     </button>
                     ) : (
-                        <button className={`flex items-center justify-center  bg-[#408052]
+                        <button onClick={handleDownload} className={`flex items-center justify-center bg-[#408052]
             px-4 py-4 sm:rounded-xl rounded-full sm:relative w-full m-2 sm:w-44 cursor-pointer hover:bg-[#2a5e39]`}>
                             Download
                         </button>
                     )}
+
+                    {showMessage && <div className="flex p-3 w-full sm:w-44 rounded-3xl sm:rounded-xl flex-col justify-center bg-red-400 gap-5">
+                        <p className="text-red-100 sm:text-sm">Purchase feature is under maintenance <br />
+                            you can download it for now.
+                        </p>
+                        <button className="p-2 rounded-full hover:bg-white hover:text-black bg-red-700 text-white" onClick={handleDownload}>Download</button>
+                    </div>}
                 </div>}
 
                 {show && <div className={`border mb-20 sm:m-0 bg-stone-100 rounded-xl p-2 flex flex-col gap-2 sm:w-96 w-full`}>
@@ -277,7 +327,7 @@ const Details = () => {
             </div>
 
             {!show && <div className={`flex flex-col gap-1.5 items-start`}>
-                <div className="flex items-start p-3 bg-white mx-3 border sm:border-none sm:bg-transparent sm:shadow-none rounded-xl">
+                <div className="flex items-start p-3 mx-3 sm:border-none sm:bg-transparent sm:shadow-none rounded-xl">
                     <p>{image.description}</p>
                 </div>
                 <div className="flex gap-2 py-3 px-6">
