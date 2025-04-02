@@ -48,5 +48,5 @@ This project is licensed under the MIT License.
 
 ## Upload an Image
 
-[![Click to upload an image]](http://localhost:3000/submit_image)
+[Click to upload an image](http://localhost:3000/submit_image)
 
