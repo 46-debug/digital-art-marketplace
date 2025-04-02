@@ -1,0 +1,21 @@
+{
+    "name": "metaCanvas",
+    "short_name": "MC",
+    "description": "A Digital Art Marketplace",
+    "icons": [
+        {
+            "src": "meta logo.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "melogo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#ffffff",
+    "background_color": "#ffffff"
+}
