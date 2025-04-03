@@ -54,7 +54,7 @@ const About = () => {
                 {show && <div className="absolute flex-col gap-5 h-[500px] sm:w-96 w-[90%] flex items-center justify-center rounded-xl bg-white/70">
                     <button onClick={() => setShow(false)} className="absolute top-5 right-5 bg-black rounded-full text-white w-7 h-7">X</button>
                     <h3 className="bg-black py-2 px-4 rounded-lg shadow-lg text-white ">Message Sent</h3>
-                    <p className="text-lg">We reply you shortly</p>
+                    <p className="text-lg">We will reply you shortly</p>
                 </div>}
                 <div className="flex my-5 sm:w-96 w-[95%] justify-between rounded-lg items-center">
                     <a href="mailto:sumit8t6t@gmail.com" className="text-blue-600">sumit8t6t@gmail</a>
