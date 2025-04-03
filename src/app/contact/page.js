@@ -59,8 +59,8 @@ const About = () => {
                 <div className="flex my-5 sm:w-96 w-[95%] justify-between rounded-lg items-center">
                     <a href="mailto:sumit8t6t@gmail.com" className="text-blue-600">sumit8t6t@gmail</a>
                     <div className='flex gap-5'>
-                        <a href="https://github.com/46-debug" target='#'><span><img src="/Assets/github.svg" alt="" /></span></a>
-                        <a href="https://github.com/46-debug" target='#'><span><img src="/Assets/linkedin.svg" alt="" /></span></a>
+                        <a href="https://github.com/46-debug/digital-art-marketplace" target='#'><span><img src="/Assets/github.svg" alt="" /></span></a>
+                        <a href="https://www.linkedin.com/in/sumit-singh123" target='#'><span><img src="/Assets/linkedin.svg" alt="" /></span></a>
                     </div>
                 </div>
                 <form className="sm:w-96 w-[95%] flex flex-col gap-3">
